@@ -30,8 +30,7 @@ public class HelloHttpFunction implements HttpFunction {
       throw new RuntimeException("Unknown tag: " + tag);
     }
 
-    byte[] responseBytes =
-            mapper.writeValueAsBytes(response);
+    byte[] responseBytes = mapper.writeValueAsBytes(webhookResponse);
 
     response.setContentType("application/json");
     response.setStatusCode(200);
