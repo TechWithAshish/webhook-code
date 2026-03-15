@@ -2,8 +2,8 @@
  <modelVersion>4.0.0</modelVersion>
 
 <groupId>gcfv2</groupId>
- <artifactId>http</artifactId>
- <version>0.0.1</version>
+ <artifactId>webhook</artifactId>
+ <version>1</version>
  <name>HTTP Function</name>
 
     <properties>
