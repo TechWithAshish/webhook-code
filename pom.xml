@@ -23,6 +23,13 @@
          <artifactId>jackson-databind</artifactId>
          <version>2.17.0</version>
      </dependency>
+     <!-- Source: https://mvnrepository.com/artifact/com.okta.jwt/okta-jwt-verifier -->
+     <dependency>
+         <groupId>com.okta.jwt</groupId>
+         <artifactId>okta-jwt-verifier</artifactId>
+         <version>0.5.14</version>
+         <scope>compile</scope>
+     </dependency>
      <dependency>
          <groupId>com.okta.jwt</groupId>
          <artifactId>okta-jwt-verifier-impl</artifactId>

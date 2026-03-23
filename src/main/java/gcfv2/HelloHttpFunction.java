@@ -73,7 +73,7 @@ public class HelloHttpFunction implements HttpFunction {
               .setAudience("https://my-dialogflow-webhook")           // The Audience you set in Auth0
               .build();
       // 3. Validate the token (Signature, Exp, Issuer, and Audience)
-      Jwt jwt = jwtVerifier.decode(token);
+      Jwt jwt = jwtVerifier.decode(token.trim());
 
       // 4. (Optional) Check for a specific scope
       var scopes = jwt.getClaims().get("scope");
