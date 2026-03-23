@@ -73,7 +73,7 @@ public class JwtValidator {
             return claims;
 
         } catch (Exception e) {
-            throw new RuntimeException("Token validation failed", e);
+            throw new RuntimeException("Token validation failed "+e.getMessage(), e);
         }
     }
 }

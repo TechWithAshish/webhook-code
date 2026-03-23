@@ -16,8 +16,6 @@ import com.nimbusds.jwt.JWTClaimsSet;
 
 public class HelloHttpFunction implements HttpFunction {
   ObjectMapper mapper = new ObjectMapper();
-  private static final String ISSUER = "https://dev-jawlnaqsx3hptwx5.us.auth0.com/";
-  private static final String JWKS_URL = ISSUER + ".well-known/jwks.json";
   public void service(final HttpRequest request, final HttpResponse response) throws IOException {
     if(!authValidation(request, response)){
       return;
