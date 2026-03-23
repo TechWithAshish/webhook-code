@@ -16,7 +16,10 @@ public class HelloHttpFunction implements HttpFunction {
   ObjectMapper mapper = new ObjectMapper();
 
   public void service(final HttpRequest request, final HttpResponse response) throws Exception {
-
+    Map<String, List<String>> headers = request.getHeaders();
+    for(String key : headers.keySet()){
+      System.out.println(key+" "+headers.get(key).toString());
+    }
     InputStream inputStream = request.getInputStream();
     WebhookRequest webhookRequest = mapper.readValue(inputStream, WebhookRequest.class);
     System.out.println("Request: " + webhookRequest);
