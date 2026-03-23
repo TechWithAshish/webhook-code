@@ -69,7 +69,7 @@ public class HelloHttpFunction implements HttpFunction {
 
     try {
       AccessTokenVerifier jwtVerifier = JwtVerifiers.accessTokenVerifierBuilder()
-              .setIssuer("https://dev-jawlnaqsx3hptwx5.us.auth0.com/") // Your Auth0/Okta Issuer
+              .setIssuer("https://dev-jawlnaqsx3hptwx5.us.auth0.com/oauth2/default") // Your Auth0/Okta Issuer
               .setAudience("https://my-dialogflow-webhook")           // The Audience you set in Auth0
               .build();
       // 3. Validate the token (Signature, Exp, Issuer, and Audience)
