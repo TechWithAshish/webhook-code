@@ -6,19 +6,26 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.cloud.functions.HttpFunction;
 import com.google.cloud.functions.HttpRequest;
 import com.google.cloud.functions.HttpResponse;
+import com.okta.jwt.AccessTokenVerifier;
+import com.okta.jwt.Jwt;
+import com.okta.jwt.JwtVerifiers;
 
 public class HelloHttpFunction implements HttpFunction {
   ObjectMapper mapper = new ObjectMapper();
-
+  // Initialize the verifier once (outside the service method) for better performance
+  private static final AccessTokenVerifier jwtVerifier = JwtVerifiers.accessTokenVerifierBuilder()
+          .setIssuer("https://dev-jawlnaqsx3hptwx5.us.auth0.com/") // Your Auth0/Okta Issuer
+          .setAudience("https://my-dialogflow-webhook")           // The Audience you set in Auth0
+          .build();
   public void service(final HttpRequest request, final HttpResponse response) throws Exception {
-    Map<String, List<String>> headers = request.getHeaders();
-    for(String key : headers.keySet()){
-      System.out.println(key+" "+headers.get(key).toString());
+    if(!authValidation(request, response)){
+      return;
     }
     InputStream inputStream = request.getInputStream();
     WebhookRequest webhookRequest = mapper.readValue(inputStream, WebhookRequest.class);
@@ -41,6 +48,40 @@ public class HelloHttpFunction implements HttpFunction {
     OutputStream os = response.getOutputStream();
     os.write(responseBytes);
     os.close();
+  }
+
+  private boolean authValidation(HttpRequest request, HttpResponse response) throws IOException {
+    // 1. Get the Authorization header
+    Optional<String> authHeader = request.getFirstHeader("Authorization");
+
+    if (authHeader.isEmpty() || !authHeader.get().startsWith("Bearer ")) {
+      response.setStatusCode(401);
+      response.getWriter().write("Missing or invalid Authorization header");
+      return false;
+    }
+
+    // 2. Extract the token string
+    String token = authHeader.get().substring(7);
+
+    try {
+      // 3. Validate the token (Signature, Exp, Issuer, and Audience)
+      Jwt jwt = jwtVerifier.decode(token);
+
+      // 4. (Optional) Check for a specific scope
+      var scopes = jwt.getClaims().get("scope");
+      if (scopes == null || !scopes.toString().contains("access:webhook")) {
+        response.setStatusCode(403);
+        response.getWriter().write("Forbidden: Missing required scope");
+        return false;
+      }
+      System.out.println("Token validation successfully");
+      return true;
+    } catch (Exception e) {
+      // Validation failed (token expired, wrong signature, etc.)
+      response.setStatusCode(401);
+      response.getWriter().write("Token validation failed: " + e.getMessage());
+      return false;
+    }
   }
 
   private WebhookResponse confirm(WebhookRequest request) {
