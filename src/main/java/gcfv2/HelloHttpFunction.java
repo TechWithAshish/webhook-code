@@ -48,16 +48,24 @@ public class HelloHttpFunction implements HttpFunction {
 
   private boolean authValidation(HttpRequest request, HttpResponse response) throws IOException {
     // 1. Get the Authorization header
-    Optional<String> authHeader = request.getFirstHeader("Authorization");
 
-    if (authHeader.isEmpty() || !authHeader.get().startsWith("Bearer ")) {
+    Map<String, List<String>> headers = request.getHeaders();
+    if(headers.get("Authorization").isEmpty()){
+      System.out.println("No Authorization header is there...");
       response.setStatusCode(401);
-      response.getWriter().write("Missing or invalid Authorization header");
+      response.getWriter().write("Missing Authorization header");
+      return false;
+    }
+    String authHeader = headers.get("Authorization").get(0);
+    System.out.println("Token is there :- "+authHeader);
+    if (!authHeader.startsWith("Bearer ")) {
+      response.setStatusCode(401);
+      response.getWriter().write("Invalid Authorization header");
       return false;
     }
 
     // 2. Extract the token string
-    String token = authHeader.get().substring(7);
+    String token = authHeader.substring(7);
 
     try {
       AccessTokenVerifier jwtVerifier = JwtVerifiers.accessTokenVerifierBuilder()
@@ -72,6 +80,7 @@ public class HelloHttpFunction implements HttpFunction {
       if (scopes == null || !scopes.toString().contains("access:webhook")) {
         response.setStatusCode(403);
         response.getWriter().write("Forbidden: Missing required scope");
+        System.out.println("No scope !!!!");
         return false;
       }
       System.out.println("Token validation successfully");
@@ -79,6 +88,7 @@ public class HelloHttpFunction implements HttpFunction {
     } catch (Exception e) {
       // Validation failed (token expired, wrong signature, etc.)
       response.setStatusCode(401);
+      System.out.println("Token Validation failed:----");
       response.getWriter().write("Token validation failed: " + e.getMessage());
       return false;
     }
