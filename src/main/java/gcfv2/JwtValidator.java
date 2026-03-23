@@ -66,9 +66,6 @@ public class JwtValidator {
             if (claims.getExpirationTime().before(new Date())) {
                 throw new RuntimeException("Token expired");
             }
-            if (claims.getClaim("scope").equals("access:webhook")){
-                throw new RuntimeException("Invalid scope");
-            }
 
             return claims;
 
