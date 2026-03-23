@@ -12,13 +12,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.cloud.functions.HttpFunction;
 import com.google.cloud.functions.HttpRequest;
 import com.google.cloud.functions.HttpResponse;
-import com.okta.jwt.AccessTokenVerifier;
-import com.okta.jwt.Jwt;
-import com.okta.jwt.JwtVerifiers;
+import com.nimbusds.jwt.JWTClaimsSet;
 
 public class HelloHttpFunction implements HttpFunction {
   ObjectMapper mapper = new ObjectMapper();
-
+  private static final String ISSUER = "https://dev-jawlnaqsx3hptwx5.us.auth0.com/";
+  private static final String JWKS_URL = ISSUER + ".well-known/jwks.json";
   public void service(final HttpRequest request, final HttpResponse response) throws IOException {
     if(!authValidation(request, response)){
       return;
@@ -68,22 +67,8 @@ public class HelloHttpFunction implements HttpFunction {
     String token = authHeader.substring(7);
 
     try {
-      AccessTokenVerifier jwtVerifier = JwtVerifiers.accessTokenVerifierBuilder()
-              .setIssuer("https://dev-jawlnaqsx3hptwx5.us.auth0.com/") // Your Auth0/Okta Issuer
-              .setAudience("https://my-dialogflow-webhook")           // The Audience you set in Auth0
-              .build();
-      // 3. Validate the token (Signature, Exp, Issuer, and Audience)
-      Jwt jwt = jwtVerifier.decode(token.trim());
-
-      // 4. (Optional) Check for a specific scope
-      var scopes = jwt.getClaims().get("scope");
-      if (scopes == null || !scopes.toString().contains("access:webhook")) {
-        response.setStatusCode(403);
-        response.getWriter().write("Forbidden: Missing required scope");
-        System.out.println("No scope !!!!");
-        return false;
-      }
-      System.out.println("Token validation successfully");
+      JWTClaimsSet jwtClaimsSet = JwtValidator.validate(token);
+      System.out.println("Token validation successfully with scope "+jwtClaimsSet.getClaim("scope"));
       return true;
     } catch (Exception e) {
       // Validation failed (token expired, wrong signature, etc.)
