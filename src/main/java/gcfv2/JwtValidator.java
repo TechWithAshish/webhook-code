@@ -15,7 +15,7 @@ import java.util.Date;
 public class JwtValidator {
 
     private static final String ISSUER = "https://dev-jawlnaqsx3hptwx5.us.auth0.com/";
-    private static final String AUDIENCE = "YOUR_API_IDENTIFIER";
+    private static final String AUDIENCE = "https://my-dialogflow-webhook";
 
     private static RemoteJWKSet<SecurityContext> jwkSet;
 
