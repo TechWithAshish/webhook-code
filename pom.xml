@@ -25,8 +25,9 @@
      </dependency>
      <dependency>
          <groupId>com.okta.jwt</groupId>
-         <artifactId>okta-jwt-verifier</artifactId>
-         <version>0.5.7</version>
+         <artifactId>okta-jwt-verifier-impl</artifactId>
+         <version>0.5.14</version>
+         <scope>compile</scope>
      </dependency>
  </dependencies>
 

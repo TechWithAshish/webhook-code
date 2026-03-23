@@ -18,12 +18,8 @@ import com.okta.jwt.JwtVerifiers;
 
 public class HelloHttpFunction implements HttpFunction {
   ObjectMapper mapper = new ObjectMapper();
-  // Initialize the verifier once (outside the service method) for better performance
-  private static final AccessTokenVerifier jwtVerifier = JwtVerifiers.accessTokenVerifierBuilder()
-          .setIssuer("https://dev-jawlnaqsx3hptwx5.us.auth0.com/") // Your Auth0/Okta Issuer
-          .setAudience("https://my-dialogflow-webhook")           // The Audience you set in Auth0
-          .build();
-  public void service(final HttpRequest request, final HttpResponse response) throws Exception {
+
+  public void service(final HttpRequest request, final HttpResponse response) throws IOException {
     if(!authValidation(request, response)){
       return;
     }
@@ -64,6 +60,10 @@ public class HelloHttpFunction implements HttpFunction {
     String token = authHeader.get().substring(7);
 
     try {
+      AccessTokenVerifier jwtVerifier = JwtVerifiers.accessTokenVerifierBuilder()
+              .setIssuer("https://dev-jawlnaqsx3hptwx5.us.auth0.com/") // Your Auth0/Okta Issuer
+              .setAudience("https://my-dialogflow-webhook")           // The Audience you set in Auth0
+              .build();
       // 3. Validate the token (Signature, Exp, Issuer, and Audience)
       Jwt jwt = jwtVerifier.decode(token);
 
