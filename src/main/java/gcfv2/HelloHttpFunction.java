@@ -88,7 +88,7 @@ public class HelloHttpFunction implements HttpFunction {
     } catch (Exception e) {
       // Validation failed (token expired, wrong signature, etc.)
       response.setStatusCode(401);
-      System.out.println("Token Validation failed:----");
+      System.out.println("Token Validation failed:----"+e.getMessage());
       response.getWriter().write("Token validation failed: " + e.getMessage());
       return false;
     }
