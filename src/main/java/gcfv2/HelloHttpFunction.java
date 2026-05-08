@@ -21,13 +21,14 @@ public class HelloHttpFunction implements HttpFunction {
     if(!authValidation(request, response)){
       return;
     }
+    byte[] bytes = request.getInputStream().readAllBytes();
     // Read raw request body
-    String requestBody = new String(request.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+    String requestBody = new String(bytes, StandardCharsets.UTF_8);
 
     // Print raw JSON
-    System.out.println("Raw Request JSON: " + requestBody);
-    InputStream inputStream = request.getInputStream();
-    WebhookRequest webhookRequest = mapper.readValue(inputStream, WebhookRequest.class);
+    System.out.println("Raw Request JSON: " + requestBody.toString());
+
+    WebhookRequest webhookRequest = mapper.readValue(bytes, WebhookRequest.class);
     System.out.println("Request: " + webhookRequest);
 
     WebhookResponse webhookResponse;
