@@ -3,6 +3,7 @@ package gcfv2;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,11 @@ public class HelloHttpFunction implements HttpFunction {
     if(!authValidation(request, response)){
       return;
     }
+    // Read raw request body
+    String requestBody = new String(request.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+
+    // Print raw JSON
+    System.out.println("Raw Request JSON: " + requestBody);
     InputStream inputStream = request.getInputStream();
     WebhookRequest webhookRequest = mapper.readValue(inputStream, WebhookRequest.class);
     System.out.println("Request: " + webhookRequest);
@@ -63,7 +69,7 @@ public class HelloHttpFunction implements HttpFunction {
 
     // 2. Extract the token string
     String token = authHeader.substring(7);
-
+    System.out.println("Token :- "+token);
     try {
       JWTClaimsSet jwtClaimsSet = JwtValidator.validate(token);
       System.out.println("Token validation successfully with scope "+jwtClaimsSet.getClaim("scope"));

@@ -66,7 +66,6 @@ public class JwtValidator {
             if (claims.getExpirationTime().before(new Date())) {
                 throw new RuntimeException("Token expired");
             }
-
             return claims;
 
         } catch (Exception e) {
