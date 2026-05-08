@@ -4,10 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.cloud.functions.HttpFunction;
@@ -23,6 +20,7 @@ public class HelloHttpFunction implements HttpFunction {
     }
     byte[] bytes = request.getInputStream().readAllBytes();
     // Read raw request body
+    System.out.println(Arrays.toString(bytes));
     String requestBody = new String(bytes, StandardCharsets.UTF_8);
 
     // Print raw JSON
